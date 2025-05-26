@@ -1,25 +1,25 @@
-import express from "express";
-import cors from "cors";
-import { getCaseNames, getCaseData, openCase } from "./cases";
+import express from 'express';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import sequelize from './databse';
+/*
+import User from 'models/User';
+import 'models/Skin';
+import 'models/InventorItem'
+import 'models/Case';
+*/
+import authRoutes from './routes/auth';
+import inventoryRoutes from './routes/inventory';
+import caseRoutes from './routes/case';
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
 
-app.get("/cases", (req, res) => {
-  res.json(getCaseNames());
+app.use('/auth', authRoutes);
+app.use('/inventory', inventoryRoutes);
+app.use('/cases', caseRoutes);
+
+sequelize.sync().then(() => {
+  app.listen(3000, () => console.log('Server running on http://localhost:3000'));
 });
-
-app.get("/cases/:name", (req, res) => {
-  const caseData = getCaseData(req.params.name);
-  if (!caseData) return res.status(404).send("Case not found");
-  res.json(caseData);
-});
-
-app.post("/cases/:name/open", (req, res) => {
-  const result = openCase(req.params.name);
-  if (!result) return res.status(404).send("Case not found");
-  res.json(result);
-});
-
-app.listen(3001, () => console.log("Backend running on http://localhost:3001"));

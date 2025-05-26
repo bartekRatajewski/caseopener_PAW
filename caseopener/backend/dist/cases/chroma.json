@@ -1,0 +1,16 @@
+{
+    "name": "Chroma Case",
+    "items": [
+        { "name": "Galil AR | Chatterbox", "rarity": "covert", "probability": 0.05 },
+        { "name": "AWP | Man-o'-war", "rarity": "covert", "probability": 0.05 },
+        { "name": "AK-47 | Cartel", "rarity": "classified", "probability": 0.10 },
+        { "name": "M4A4 | Dragon King", "rarity": "classified", "probability": 0.10 },
+        { "name": "Desert Eagle | Naga", "rarity": "restricted", "probability": 0.15 },
+        { "name": "P250 | Muertos", "rarity": "restricted", "probability": 0.15 },
+        { "name": "Five-SeveN | Monkey Business", "rarity": "restricted", "probability": 0.15 },
+        { "name": "Glock-18 | Catacombs", "rarity": "mil-spec", "probability": 0.05 },
+        { "name": "MP9 | Deadly Poison", "rarity": "mil-spec", "probability": 0.05 },
+        { "name": "Sawed-Off | Serenity", "rarity": "mil-spec", "probability": 0.05 },
+        { "name": "MAG-7 | Heaven Guard", "rarity": "mil-spec", "probability": 0.05 }
+    ]
+}

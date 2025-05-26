@@ -1,0 +1,16 @@
+{
+  "name": "Prisma Case",
+  "items": [
+    { "name": "M4A4 | The Emperor", "rarity": "covert", "probability": 0.05 },
+    { "name": "AWP | Atheris", "rarity": "covert", "probability": 0.05 },
+    { "name": "UMP-45 | Moonrise", "rarity": "classified", "probability": 0.10 },
+    { "name": "R8 Revolver | Skull Crusher", "rarity": "classified", "probability": 0.10 },
+    { "name": "MAC-10 | Whitefish", "rarity": "restricted", "probability": 0.15 },
+    { "name": "MP5-SD | Gauss", "rarity": "restricted", "probability": 0.15 },
+    { "name": "FAMAS | Crypsis", "rarity": "restricted", "probability": 0.15 },
+    { "name": "Desert Eagle | Light Rail", "rarity": "mil-spec", "probability": 0.05 },
+    { "name": "Galil AR | Akoben", "rarity": "mil-spec", "probability": 0.05 },
+    { "name": "P250 | Verdigris", "rarity": "mil-spec", "probability": 0.05 },
+    { "name": "Tec-9 | Bamboozle", "rarity": "mil-spec", "probability": 0.05 }
+  ]
+}

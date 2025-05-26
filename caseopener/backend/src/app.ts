@@ -2,12 +2,6 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import sequelize from './databse';
-/*
-import User from 'models/User';
-import 'models/Skin';
-import 'models/InventorItem'
-import 'models/Case';
-*/
 import authRoutes from './routes/auth';
 import inventoryRoutes from './routes/inventory';
 import caseRoutes from './routes/case';

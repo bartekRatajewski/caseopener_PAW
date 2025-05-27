@@ -1,38 +1,34 @@
-// src/context/AuthContext.tsx
-import { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { getUserProfile } from '../api/api';
 
 interface AuthContextType {
-    token: string | null;
     user: any;
-    login: (token: string, user: any) => void; // ← Zmienione
+    token: string | null;
+    login: (token: string) => void;
     logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-    const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<any>(null);
+    const [token, setToken] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (token) {
-            getUserProfile(token)
-                .then(setUser)
-                .catch(() => {
-                    setToken(null);
-                    localStorage.removeItem('token');
-                });
-        }
-    }, [token]);
+    const login = (newToken: string) => {
+        console.log('📦 Sending token to profile endpoint:', newToken);
 
-    const login = (token: string, user: any) => {
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
-        setToken(token);
-        setUser(user);
+        localStorage.setItem('token', newToken);
+        setToken(newToken);
+        getUserProfile(newToken)
+            .then((data) => {
+                console.log('🎯 Logged in user profile:', data);
+                setUser(data);
+            })
+            .catch((err) => {
+                console.error('🔴 Error during login profile fetch:', err);
+                setUser(null);
+            });
     };
-
 
     const logout = () => {
         localStorage.removeItem('token');
@@ -40,15 +36,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(null);
     };
 
+    useEffect(() => {
+        const savedToken = localStorage.getItem('token');
+        if (savedToken) {
+            setToken(savedToken);
+            getUserProfile(savedToken)
+                .then((data) => {
+                    console.log('🎯 Auto-loaded user profile:', data);
+                    setUser(data);
+                })
+                .catch((err) => {
+                    console.error('🔴 Error fetching profile on load:', err);
+                    logout();
+                });
+        }
+    }, []);
+
     return (
-        <AuthContext.Provider value={{ token, user, login, logout }}>
+        <AuthContext.Provider value={{ user, token, login, logout }}>
             {children}
         </AuthContext.Provider>
     );
 };
 
-export const useAuth = (): AuthContextType => {
-    const context = useContext(AuthContext);
-    if (!context) throw new Error('useAuth must be used within AuthProvider');
-    return context;
-};
+export const useAuth = () => useContext(AuthContext);

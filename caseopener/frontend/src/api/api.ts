@@ -21,19 +21,17 @@ export async function loginUser(username: string, password: string) {
         body: JSON.stringify({ username, password }),
     });
     if (!res.ok) throw new Error('Login failed');
-    return res.json(); // powinien zwracać { token, user }
+    return res.json(); // { token }
 }
 
 export const getUserProfile = async (token: string) => {
-    const res = await fetch('/auth/profile', {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
+    const res = await fetch(`${API_URL}/auth/profile`, {
+        headers: { Authorization: `Bearer ${token}` },
     });
-    const data = await res.json();
 
     if (!res.ok) throw new Error('Unauthorized');
-    return res.json();
+
+    return res.json(); // { id, username, balance }
 };
 
 export const getInventory = async (token: string) => {

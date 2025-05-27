@@ -7,8 +7,8 @@ import Inventory from './components/Inventory';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
-    const { token } = useAuth();
-    return token ? children : <Navigate to="/login" />;
+    const auth = useAuth();
+    return auth?.token ? children : <Navigate to="/login" />;
 }
 
 export default function App() {
@@ -18,14 +18,11 @@ export default function App() {
                 <Navbar />
                 <main className="p-6">
                     <Routes>
+                        <Route path="/" element={<CaseList />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
 
-                        <Route path="/" element={
-                            <PrivateRoute>
-                                <CaseList />
-                            </PrivateRoute>
-                        } />
+
 
                         <Route path="/inventory" element={
                             <PrivateRoute>

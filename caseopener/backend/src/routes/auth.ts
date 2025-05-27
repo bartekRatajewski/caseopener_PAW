@@ -4,20 +4,19 @@ import jwt from 'jsonwebtoken';
 import User from '../models/User';
 
 const router = express.Router();
-const SECRET = 'SECRET_KEY';
+const SECRET = process.env.JWT_SECRET || 'SECRET_KEY';
 
 export const authenticateToken = (req: any, res: any, next: any) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
     if (!token) return res.sendStatus(401);
 
-    jwt.verify(token, process.env.JWT_SECRET!, (err: any, user: any) => {
+    jwt.verify(token, SECRET, (err: any, user: any) => {
         if (err) return res.sendStatus(403);
-        req.user = user; // ← tutaj ważne
+        req.user = user;
         next();
     });
 };
-
 
 router.post('/register', async (req, res) => {
     const { username, password } = req.body;

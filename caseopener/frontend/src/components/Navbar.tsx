@@ -3,9 +3,13 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar: React.FC = () => {
-    const { user, logout } = useAuth() ?? {};
+    const auth = useAuth();
 
-    console.log('🧠 Navbar user:', user);
+    if (!auth) {
+        return null;
+    }
+
+    const { user, logout } = auth;
 
     return (
         <nav className="bg-gray-800 text-white p-4 flex justify-between items-center">
@@ -17,12 +21,26 @@ const Navbar: React.FC = () => {
             <div className="flex gap-4 items-center">
                 {user ? (
                     <>
-                        <span>💰 {user.balance} coins</span>
-                        <span>👤 {user.username}</span>
-                        <button onClick={logout} className="bg-red-500 px-3 py-1 rounded hover:bg-red-600">Logout</button>
+                        <span className="bg-gray-700 px-3 py-1 rounded">
+                            💰 {user.balance?.toFixed(2) || '0.00'} coins
+                        </span>
+                        <span className="bg-gray-700 px-3 py-1 rounded">
+                            👤 {user.username}
+                        </span>
+                        <button
+                            onClick={logout}
+                            className="bg-red-500 px-3 py-1 rounded hover:bg-red-600"
+                        >
+                            Logout
+                        </button>
                     </>
                 ) : (
-                    <Link to="/login" className="bg-blue-500 px-3 py-1 rounded hover:bg-blue-600">Login</Link>
+                    <Link
+                        to="/login"
+                        className="bg-blue-500 px-3 py-1 rounded hover:bg-blue-600"
+                    >
+                        Login
+                    </Link>
                 )}
             </div>
         </nav>

@@ -18,18 +18,22 @@ export default function CaseList() {
             return;
         }
 
+        const caseItem = cases.find(c => c.id === caseId);
+        if (!caseItem) {
+            setError('Case not found');
+            return;
+        }
+
         setIsOpening(true);
         setError('');
 
         try {
             const result = await openCase(caseId, token);
             alert(`You received: ${result.skin.name} (Value: $${result.skin.price})`);
-            if (updateBalance && user) {
-                // Update local balance immediately for better UX
-                const caseItem = cases.find(c => c.id === caseId);
-                if (caseItem) {
-                    updateBalance(user.balance - caseItem.price);
-                }
+
+            // Używamy nowego balansu zwróconego z backendu
+            if (updateBalance && typeof result.newBalance === 'number') {
+                updateBalance(result.newBalance);
             }
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to open case');

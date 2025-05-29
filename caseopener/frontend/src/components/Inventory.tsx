@@ -1,4 +1,3 @@
-// src/components/Inventory.tsx
 import { useEffect, useState } from 'react';
 import { getInventory, sellItem } from '../api/api';
 import { useAuth } from '../context/AuthContext';
@@ -6,20 +5,31 @@ import { useAuth } from '../context/AuthContext';
 export default function Inventory() {
     const { token } = useAuth();
     const [items, setItems] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
     const fetchItems = async () => {
-        const result = await getInventory(token!);
-        setItems(result);
+        if (!token) return; // zabezpieczenie
+        try {
+            const result = await getInventory(token);
+            setItems(result);
+        } catch (err) {
+            console.error('Failed to fetch inventory:', err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
         fetchItems();
-    }, []);
+    }, [token]); // ⬅ czekamy na token
 
     const handleSell = async (id: string) => {
-        await sellItem(id, token!);
+        if (!token) return;
+        await sellItem(id, token);
         await fetchItems();
     };
+
+    if (loading) return <p className="text-center mt-4">Loading inventory...</p>;
 
     return (
         <div className="max-w-4xl mx-auto mt-6">

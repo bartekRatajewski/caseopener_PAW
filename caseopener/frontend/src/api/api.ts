@@ -67,3 +67,12 @@ export const openCase = async (caseId: string, token: string) => {
     }
     return res.json();
 };
+
+export const addBalance = async (token: string) => {
+    const res = await fetch(`${API_URL}/auth/add-balance`, {
+        method: 'POST',
+        headers: headers(token),
+    });
+    if (!res.ok) throw new Error('Failed to add balance');
+    return res.json();
+};

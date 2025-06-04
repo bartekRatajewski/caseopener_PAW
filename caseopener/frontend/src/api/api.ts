@@ -56,6 +56,15 @@ export const sellItem = async (id: string, token: string) => {
     return res.json();
 };
 
+// NEW: Get all cases
+export const getAllCases = async () => {
+    const res = await fetch(`${API_URL}/cases`, {
+        headers: { 'Content-Type': 'application/json' },
+    });
+    if (!res.ok) throw new Error('Failed to fetch cases');
+    return res.json();
+};
+
 export const openCase = async (caseId: string, token: string) => {
     const res = await fetch(`${API_URL}/cases/open/${caseId}`, {
         method: 'POST',

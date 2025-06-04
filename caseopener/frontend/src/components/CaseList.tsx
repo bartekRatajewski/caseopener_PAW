@@ -1,18 +1,38 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { openCase } from '../api/api';
+import { openCase, getAllCases } from '../api/api';
 
-const cases = [
-    { id: '1', name: 'Starter Case', price: 100 },
-    { id: '2', name: 'Pro Case', price: 250 },
-];
+interface Case {
+    id: number;
+    name: string;
+    price: number;
+    skins: number[];
+}
 
 export default function CaseList() {
     const { token, user, updateBalance } = useAuth() || {};
+    const [cases, setCases] = useState<Case[]>([]);
     const [isOpening, setIsOpening] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    const handleOpen = async (caseId: string) => {
+    // Fetch cases from API on component mount
+    useEffect(() => {
+        const fetchCases = async () => {
+            try {
+                const casesData = await getAllCases();
+                setCases(casesData);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'Failed to load cases');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCases();
+    }, []);
+
+    const handleOpen = async (caseId: number) => {
         if (!token) {
             setError('You need to log in first');
             return;
@@ -28,12 +48,12 @@ export default function CaseList() {
         setError('');
 
         try {
-            const result = await openCase(caseId, token);
-            alert(`You received: ${result.skin.name} (Value: $${result.skin.price})`);
+            const result = await openCase(caseId.toString(), token);
+            alert(`You received: ${result.won.name} (Value: $${result.won.price})`);
 
-            // Używamy nowego balansu zwróconego z backendu
-            if (updateBalance && typeof result.newBalance === 'number') {
-                updateBalance(result.newBalance);
+            // Use the balance returned from backend
+            if (updateBalance && typeof result.balance === 'number') {
+                updateBalance(result.balance);
             }
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to open case');
@@ -41,6 +61,14 @@ export default function CaseList() {
             setIsOpening(false);
         }
     };
+
+    if (loading) {
+        return (
+            <div className="max-w-3xl mx-auto mt-6">
+                <div className="text-center">Loading cases...</div>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-3xl mx-auto mt-6">
@@ -51,6 +79,9 @@ export default function CaseList() {
                     <div key={c.id} className="border p-4 rounded shadow">
                         <h3 className="text-xl">{c.name}</h3>
                         <p className="text-gray-600 mb-2">Cost: ${c.price}</p>
+                        <p className="text-sm text-gray-500 mb-2">
+                            Contains {c.skins.length} possible items
+                        </p>
                         <button
                             onClick={() => handleOpen(c.id)}
                             disabled={isOpening || !token || (user?.balance || 0) < c.price}

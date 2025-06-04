@@ -1,31 +1,30 @@
 import express, { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import { authenticateToken } from './auth'; // Import the auth middleware from your auth file
 import User from '../models/User';
 import Case from '../models/Case';
 import Skin from '../models/Skin';
 import InventoryItem from '../models/InventorItem';
 
 const router = express.Router();
-const SECRET = 'SECRET_KEY';
 
 interface AuthenticatedRequest extends Request {
     user?: User;
 }
 
-const auth = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    const token = req.headers.authorization;
+// Get all cases (public endpoint - no auth required)
+router.get('/', async (req: Request, res: Response) => {
     try {
-        const payload = jwt.verify(token || '', SECRET) as { id: number };
-        const user = await User.findByPk(payload.id);
-        if (!user) return res.status(401).json({ error: 'Unauthorized' });
-        req.user = user;
-        next();
-    } catch {
-        res.status(401).json({ error: 'Unauthorized' });
+        const cases = await Case.findAll({
+            order: [['price', 'ASC']] // Order by price ascending
+        });
+        res.json(cases);
+    } catch (error) {
+        console.error('Error fetching cases:', error);
+        res.status(500).json({ error: 'Failed to fetch cases' });
     }
-};
+});
 
-router.post('/open/:caseId', auth, async (req: AuthenticatedRequest, res: Response) => {
+router.post('/open/:caseId', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     const kase = await Case.findByPk(req.params.caseId);
     if (!kase) return res.status(404).json({ error: 'Case not found' });
 

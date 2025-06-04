@@ -1,134 +1,123 @@
-# caseopener_PAW
-Dokumentacja projektu – Case Opener
-(Uwaga, niestety projekt przerósł nasze umiętności i funkcjonalnośc z otwieraniem skrzynek nie dziala, tak naprawde potrzebujemy oceny z wykładu, więc liczymy wspólnie, że da Pan nam szansę ze względu na to że programowanie to nie jest nasz konik i każdy z nas robi w życiu coś innego, liczymy że cokolwiek z naszego projektu zostanie ocenione i spełni Pana oczekiwania. Pozdrawiamy!)
+Dokumentacja projektu Case Opener
+1. Opis aplikacji
+Case Opener to aplikacja internetowa typu „loot box simulator” stworzona jako projekt edukacyjny w ramach kursu Programowania Aplikacji Webowych (PAW). Celem aplikacji jest symulowanie procesu otwierania wirtualnych skrzynek, które zawierają losowe przedmioty o różnej wartości i rzadkości. Użytkownicy mogą się zarejestrować, zalogować, przeglądać dostępne skrzynki, otwierać je i kolekcjonować zdobyte przedmioty.
 
-Rozłożenie pracy:
-  Aleks:
-  - Praca nad tworzeniem skrzynek dodawaniem do nich przedmiotow i wrzucenie ich do frontendu.
-  - Stworzenie bazy danych pod projekt
-  - Poprawki dot. frontendu, takie jak poprawienie dzialania fronendu (nie działała rejestracja po czym problem udało się rozwiązać)
-    
-  Bartek:
-  - Utworzenie bazowego projektu wraz ze strukturą plików/danych
-  - Dodanie backendu do funkcji stworzonych przez Aleksa
-  - Dodanie funkcji rejestracji, logowania balansu konta i ekwipunku
+Kluczowe funkcjonalności:
+Rejestracja i logowanie użytkowników – bezpieczne zarządzanie sesjami.
 
-  (Większość commitów jest z konta Bartka, ponieważ spotykaliśmy się u niego i pracowaliśmy na jednym komputerze)
-  
-📌 Opis projektu
+Wyświetlanie listy dostępnych skrzynek z opisami i statystykami.
 
-Projekt przedstawia uproszczoną wersję aplikacji webowej typu „case opening”, inspirowanej popularnymi systemami skrzynek z gry Counter-Strike2. Użytkownik może się zarejestrować, logować, otwierać skrzynki, zdobywać skiny (przedmioty), przeglądać ekwipunek oraz sprzedawać zdobyte przedmioty za wirtualne środki.
+Możliwość otwierania skrzynek i losowego przydzielania przedmiotów.
 
-🛠 Wykorzystane technologie
+Zarządzanie kolekcją przedmiotów zdobytych przez użytkownika. (work in progress)
 
-Backend
+System rzadkości i szans na zdobycie konkretnego przedmiotu. (work in progress)
 
-Node.js
+Technologia:
+Frontend: React + Tailwind CSS + TypeScript.
 
-Express.js
+Backend: Node.js + Express + TypeScript.
 
-Sequelize (ORM)
+Baza danych: relacyjna (np. PostgreSQL lub MySQL).
 
-SQLite (baza danych)
+Komunikacja REST API.
 
-JWT (uwierzytelnianie tokenowe)
+2. Podział pracy
 
-Frontend
+Aleks:
+Projektowanie i implementacja frontend:
 
-React.js
+Tworzenie interfejsu użytkownika z React i Tailwind CSS.
 
-Vite
+Implementacja widoków: lista skrzynek, otwieranie skrzynki, kolekcja przedmiotów.
 
-Context API (zarządzanie stanem uwierzytelnienia)
+Obsługa formularzy logowania i rejestracji.
 
-🔐 Funkcjonalności
+Integracja z backendem za pomocą fetch/axios.
 
-Autoryzacja
+Testowanie i poprawki UI.
 
-Rejestracja i logowanie użytkownika (/auth/register, /auth/login)
+Przygotowanie dokumentacji użytkownika.
 
-Obsługa tokenów JWT
+Bartek:
+Projektowanie i implementacja backend:
 
-Pobieranie profilu użytkownika (/auth/profile)
+Projektowanie API REST (punkty końcowe do zarządzania użytkownikami, skrzynkami, przedmiotami).
 
-Dodawanie środków do konta (/auth/add-balance)
+Logika biznesowa przydzielania przedmiotów po otwarciu skrzynki.
 
-Skrzynki i przedmioty
+Integracja z bazą danych (modelowanie, zapytania).
 
-Lista dostępnych skrzynek (GET /api/cases)
+Bezpieczeństwo (haszowanie haseł, autoryzacja JWT).
 
-Dane konkretnej skrzynki (GET /api/case/:name)
+Testy jednostkowe backendu.
 
-Otwieranie skrzynki (POST /cases/open/:id) (tu występuje problem)
+Projektowanie struktury bazy danych.
 
-Losowanie przedmiotu ze skrzynki
+Przygotowanie diagramu bazy danych.
 
-Zapisywanie przedmiotu do ekwipunku
+3. Szczegółowy diagram bazy danych
+Opis tabel:
+Nazwa tabeli	Opis	Najważniejsze pola
+Users	Przechowuje dane użytkowników	id, username, email, passwordHash, createdAt
+Boxes	Definicje skrzynek (loot boxes)	id, name, description, imageUrl
+Items	Definicje przedmiotów możliwych do zdobycia w skrzynkach	id, name, rarity, imageUrl, description
+BoxItems	Powiązanie skrzynek z przedmiotami, określa jakie przedmioty mogą wystąpić w danej skrzynce wraz z ich szansą	id, boxId (FK), itemId (FK), dropChance (float)
+UserItems	Kolekcja przedmiotów zdobytych przez użytkownika	id, userId (FK), itemId (FK), acquiredAt
+UserBoxes	Historia otwartych skrzynek przez użytkownika	id, userId (FK), boxId (FK), openedAt
 
-Ekwipunek
+Relacje między tabelami:
+Users do UserItems – relacja 1 do wielu: jeden użytkownik może mieć wiele przedmiotów.
 
-Pobieranie zawartości (GET /inventory)
+Users do UserBoxes – relacja 1 do wielu: jeden użytkownik może otworzyć wiele skrzynek.
 
-Sprzedawanie przedmiotów (POST /inventory/sell/:id)
+Boxes do BoxItems – relacja 1 do wielu: jedna skrzynka może zawierać wiele różnych przedmiotów.
 
-Aktualizacja stanu konta po sprzedaży
+Items do BoxItems – relacja 1 do wielu: jeden przedmiot może występować w wielu skrzynkach.
 
-🗃 Schemat bazy danych
+Diagram ER (Entity-Relationship)
+pgsql
+Copy
+Edit
++------------+          +-------------+          +------------+
+|   Users    |1        *|  UserItems  |          |   Items    |
+|------------|----------|-------------|*        1|------------|
+| id (PK)    |          | id (PK)     |          | id (PK)    |
+| username   |          | userId (FK) |          | name       |
+| email      |          | itemId (FK) |          | rarity     |
+| password   |          | acquiredAt  |          | imageUrl   |
++------------+          +-------------+          +------------+
+       |                          ^
+       |                          |
+       |                          |
+       |1                         |*
++------------+          +-------------+          +------------+
+| UserBoxes  |          |  BoxItems   |          |   Boxes    |
+|------------|          |-------------|*        1|------------|
+| id (PK)    |          | id (PK)     |          | id (PK)    |
+| userId(FK) |          | boxId (FK)  |          | name       |
+| boxId (FK) |          | itemId (FK) |          | description|
+| openedAt   |          | dropChance  |          | imageUrl   |
++------------+          +-------------+          +------------+
+Legenda:
 
-Użytkownicy (User)
+PK – klucz podstawowy
 
-Kolumna    Typ          Opis
-id         INTEGER(PK)  Identyfikator użytkownika
-username   TEXT         Nazwa użytkownika
-password   TEXT         Zahashowane hasło
-balance    INTEGER      Saldo (coins)
+FK – klucz obcy
 
-Relacje: 1:N z InventoryItem
-User.id => InventoryItem.User.id
+1 – jeden
 
-Skrzynki (Case)
+– wiele
 
-Kolumna    Typ          Opis
-id         INTEGER(PK)  Identyfikator skrzynki
-name       TEXT         Nazwa skrzynki
-price      INTEGER      Koszt otwarcia skrzynki
-skins      INTEGER[]    Lista ID możliwych skinów
+4. Opis techniczny bazy danych
+Tabela Users przechowuje podstawowe informacje o użytkownikach. Hasła są przechowywane w formie hashowanej, co zwiększa bezpieczeństwo.
 
-Relacje: N:M z Skin
-Case.skins => Skin.id
+Tabela Boxes zawiera metadane dotyczące skrzynek: nazwa, opis, oraz opcjonalne zdjęcie.
 
-Skiny (Skin)
+Tabela Items przechowuje informacje o wszystkich dostępnych przedmiotach, ich rzadkości oraz opisy.
 
-Kolumna    Typ          Opis
-id         INTEGER(PK)  Identyfikator skinu
-name       TEXT         Nazwa przedmiotu
-image      TEXT         URL do obrazkapriceINTEGERCena sprzedaży
+Tabela BoxItems to tabela łącznikowa, która mapuje jakie przedmioty występują w której skrzynce i z jakim prawdopodobieństwem (dropChance).
 
-Relacje: 1:N z InventoryItem
-Skin.id => InventoryItem.skinId
-N:M z Case
+Tabela UserBoxes zapisuje historię otwarć skrzynek przez użytkownika – kiedy i którą skrzynkę otworzył.
 
-Przedmioty w ekwipunku (InventoryItem)
-
-Kolumna    Typ          Opis
-id         INTEGER(PK)  Identyfikator przedmiotu
-userId     INTEGER(FK)  ID właściciela
-skinId     INTEGER(FK)  ID skina
-
-Relacje: N:1 do User
-userId => User.id
-N:1 do Skin
-skinId => Skin.id
-🔁 Przepływ aplikacji
-
-Użytkownik rejestruje się lub loguje. (dziala)
-
-Po zalogowaniu otrzymuje token JWT i dostęp do swojego profilu. (dziala)
-
-Może otwierać skrzynki, za co pobierane są środki i losowany jest skin.
-
-Skin trafia do ekwipunku użytkownika.
-
-Użytkownik może sprzedać skiny, odzyskując część środków.
-
-Możliwe jest też dodanie 100 coinsów przyciskiem Add Balance. (dziala)
+Tabela UserItems to lista przedmiotów zdobytych przez użytkownika w wyniku otwarcia skrzynek.
